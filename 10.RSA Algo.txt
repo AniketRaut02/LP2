@@ -1,48 +1,75 @@
-# Experiment No. 4
-# RSA Algorithm Implementation
+# Python Program for implementation of RSA Algorithm
 
-# Input two prime numbers
-p = int(input("Enter first prime number: "))
-q = int(input("Enter second prime number: "))
+def power(base, expo, m):
+    res = 1
+    base = base % m
+    while expo > 0:
+        if expo & 1:
+            res = (res * base) % m
+        base = (base * base) % m
+        expo = expo // 2
+    return res
 
-# Calculate n
-n = p * q
+# Function to find modular inverse of e modulo phi(n)
+# Here we are calculating phi(n) using Hit and Trial Method
+# but we can optimize it using Extended Euclidean Algorithm
+def modInverse(e, phi):
+    for d in range(2, phi):
+        if (e * d) % phi == 1:
+            return d
+    return -1
 
-# Calculate phi
-phi = (p - 1) * (q - 1)
+# RSA Key Generation
+def generateKeys():
+    p = int(input("Enter First Prime Number: "))
+    q = int(input("Enter First Second Number: "))
+    
+    n = p * q
+    phi = (p - 1) * (q - 1)
 
-# Choose e
-e = int(input("Enter value of e: "))
+    # Choose e, where 1 < e < phi(n) and gcd(e, phi(n)) == 1
+    e = 0
+    for e in range(2, phi):
+        if gcd(e, phi) == 1:
+            break
 
-# Find d
-k = 2
-d = (k * phi + 1) // e
+    # Compute d such that e * d ≡ 1 (mod phi(n))
+    d = modInverse(e, phi)
+    print("Value of e chosen is: ", e)
+    print("Value of d chosen is: ", d)
+    
+    return e, d, n
 
-print("\nPublic Key = (", e, ",", n, ")")
-print("Private Key = (", d, ",", n, ")")
+# Function to calculate gcd
+def gcd(a, b):
+    while b != 0:
+        a, b = b, a % b
+    return a
 
-# Message input
-msg = int(input("\nEnter message(number): "))
+# Encrypt message using public key (e, n)
+def encrypt(m, e, n):
+    return power(m, e, n)
 
-# Encryption
-c = (msg ** e) % n
-print("Encrypted Message:", c)
+# Decrypt message using private key (d, n)
+def decrypt(c, d, n):
+    return power(c, d, n)
 
-# Decryption
-m = (c ** d) % n
-print("Decrypted Message:", m)
+# Main execution
+if __name__ == "__main__":
+    
+    # Key Generation
+    e, d, n = generateKeys()
+  
+    print(f"Public Key (e, n): ({e}, {n})")
+    print(f"Private Key (d, n): ({d}, {n})")
 
-"""
-Enter first prime number: 7
-Enter second prime number: 23
-Enter value of e: 3
+    # Message
+    M = int(input("Enter original message(numbers): "))
 
-Public Key = ( 3 , 161 )
-Private Key = ( 88 , 161 )
+    # Encrypt the message
+    C = encrypt(M, e, n)
+    print(f"Encrypted Message: {C}")
 
-Enter message(number): 7665
-Encrypted Message: 147
-Decrypted Message: 70
-
-=== Code Execution Successful ===
-"""
+    # Decrypt the message
+    decrypted = decrypt(C, d, n)
+    print(f"Decrypted Message: {decrypted}")
