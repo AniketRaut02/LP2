@@ -1,0 +1,29 @@
+text = input("Enter a string: ")
+
+print("\nOriginal String:", text)
+
+# AND Operation
+print("\nAfter AND with 127:")
+
+for ch in text:
+    print(chr(ord(ch) & 127), end="")
+
+# XOR Operation
+print("\n\nAfter XOR with 127 (ASCII values):")
+
+for ch in text:
+    result = ord(ch) ^ 127
+    print(result, end=" ")
+
+"""
+Enter a string: helloworld
+
+Original String: helloworld
+
+After AND with 127:
+helloworld
+
+After XOR with 127 (ASCII values):
+23 26 19 19 16 8 16 13 19 27 
+=== Code Execution Successful ===
+"""
